@@ -1,0 +1,19 @@
+# 编译产物
+*.exe
+*.dll
+*.so
+*.dylib
+*.out
+
+# 环境变量与密钥
+.env
+.env.*
+*.pem
+*.key
+
+# 编辑器
+.vscode/
+.idea/
+
+# 临时文件
+*.log
