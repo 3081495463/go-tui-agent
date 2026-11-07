@@ -1,3 +1,7 @@
 {
-  "mcpServers": {}
+  "mcpServers": {
+    "browser": {
+      "command": "bin/browser-mcp.exe"
+    }
+  }
 }

@@ -38,27 +38,28 @@ $env:TAVILY_API_KEY="你的 Tavily API Key"
 
 项目内置 MCP 客户端，会把 `mcp.json` 中配置的服务器工具自动注册给模型（工具名格式为 `服务器名_工具名`，描述前缀 `[MCP:服务器名]`）。
 
-`mcp.json` 位于项目根目录，格式为标准的 `mcpServers`：
+仓库自带一个用 Go 写的 MCP 服务器 [cmd/browser-mcp](cmd/browser-mcp/main.go)，通过 `open_url` 工具打开浏览器：
+
+```bat
+go build -o bin/browser-mcp.exe ./cmd/browser-mcp
+```
+
+`mcp.json` 已指向它：
 
 ```json
 {
   "mcpServers": {
-    "filesystem": {
-      "command": "npx",
-      "args": ["-y", "@modelcontextprotocol/server-filesystem", "."]
-    },
-    "playwright": {
-      "command": "npx",
-      "args": ["-y", "@playwright/mcp@latest"]
+    "browser": {
+      "command": "bin/browser-mcp.exe"
     }
   }
 }
 ```
 
-- `command` 为可执行文件名，Windows 下用到 npm 工具时需写 `npx.cmd`（或 `cmd` + `["/c", "npx", ...]`）
-- `args`、`env` 可选
-- 未配置（`{}`）时程序行为与之前完全一致
-- 单个服务器启动失败只会在 stderr 提示，不影响内置工具和其他服务器
+启动主程序后模型会看到工具 `browser_open_url`。注意 `command` 是相对路径，需要在仓库根目录运行主程序。
+
+新增其他服务器只需继续往 `mcpServers` 里加条目，`args`、`env` 均可选；用 npm 生态的服务器时 Windows 下 `command` 要写 `npx.cmd` 并先安装 Node.js。未配置（`{}`）时程序行为与之前完全一致，单个服务器启动失败只会在 stderr 提示，不影响内置工具和其他服务器。
+
 
 ## 运行
 
@@ -76,6 +77,8 @@ agentOpenai/
 ├── main.go              # Bubble Tea TUI 入口
 ├── agent.go             # Agent 主循环、工具注册、系统提示词
 ├── mcp.json             # MCP 服务器配置
+├── cmd/
+│   └── browser-mcp/     # 自带的 MCP 服务器（stdio），提供打开浏览器工具
 ├── core/
 │   └── session.go       # 会话消息管理
 └── tools/
