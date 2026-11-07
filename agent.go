@@ -179,7 +179,7 @@ func RunAgent(userInput string, onStatus func(string)) string {
 						}
 					}
 
-					if item.AsFunctionCall().Name == "open_browser" && onStatus != nil {
+					if (item.AsFunctionCall().Name == "open_browser" || item.AsFunctionCall().Name == "browser_open_url") && onStatus != nil {
 						onStatus("🌐 正在为你打开浏览器...")
 					}
 					if item.AsFunctionCall().Name == "read_local_file" && onStatus != nil {
