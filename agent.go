@@ -35,6 +35,15 @@ func getLlmTools() map[string]*tools.ToolDef {
 	llmTools[shell.Name] = shell
 	llmTools[readFileTool.Name] = readFileTool
 	llmTools[openBrowserTool.Name] = openBrowserTool
+
+	// 加载 mcp.json 中配置的 MCP 服务器工具（未配置或单个服务器失败都不影响内置工具）
+	mcpTools, err := tools.LoadMCPTools(context.Background(), "mcp.json")
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "MCP 加载失败：%v\n", err)
+	}
+	for name, def := range mcpTools {
+		llmTools[name] = def
+	}
 	return llmTools
 }
 

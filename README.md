@@ -34,6 +34,32 @@ $env:TAVILY_API_KEY="你的 Tavily API Key"
 
 `agent.go` 中的 `Model` 为火山引擎推理接入点 ID（形如 `ep-xxxx`），请替换为你自己的接入点。
 
+## MCP 扩展
+
+项目内置 MCP 客户端，会把 `mcp.json` 中配置的服务器工具自动注册给模型（工具名格式为 `服务器名_工具名`，描述前缀 `[MCP:服务器名]`）。
+
+`mcp.json` 位于项目根目录，格式为标准的 `mcpServers`：
+
+```json
+{
+  "mcpServers": {
+    "filesystem": {
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-filesystem", "."]
+    },
+    "playwright": {
+      "command": "npx",
+      "args": ["-y", "@playwright/mcp@latest"]
+    }
+  }
+}
+```
+
+- `command` 为可执行文件名，Windows 下用到 npm 工具时需写 `npx.cmd`（或 `cmd` + `["/c", "npx", ...]`）
+- `args`、`env` 可选
+- 未配置（`{}`）时程序行为与之前完全一致
+- 单个服务器启动失败只会在 stderr 提示，不影响内置工具和其他服务器
+
 ## 运行
 
 ```bat
@@ -49,10 +75,12 @@ go build .
 agentOpenai/
 ├── main.go              # Bubble Tea TUI 入口
 ├── agent.go             # Agent 主循环、工具注册、系统提示词
+├── mcp.json             # MCP 服务器配置
 ├── core/
 │   └── session.go       # 会话消息管理
 └── tools/
     ├── tool.go          # ToolDef 定义与转换
+    ├── mcp_client.go    # MCP 客户端，把外部 MCP 工具接入模型
     ├── get_web_search.go
     ├── read_local_file.go
     ├── open_browser.go
